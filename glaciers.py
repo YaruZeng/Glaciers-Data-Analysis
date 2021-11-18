@@ -1,6 +1,8 @@
 from pathlib import Path
 import csv
 import utils
+import matplotlib.pyplot as plt
+import os
 
 class Glacier:
     def __init__(self, glacier_id, name, unit, lat, lon, code):
@@ -25,9 +27,26 @@ class Glacier:
         else:
             self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
         
-
     def plot_mass_balance(self, output_path):
-        raise NotImplementedError
+        
+        #print(self.mass_balance)
+        x = sorted(self.mass_balance.keys())
+        #print(x)
+        y = []
+
+        for i in range(len(x)):
+            temp = self.mass_balance[x[i]]['mass_balance']
+            y.append(temp)
+        #print(y)
+
+        plt.figure(figsize=(10,5))
+        plt.title(f'{self.id} {self.name}: Mass balance changes by years')
+        plt.xlabel('year')
+        plt.ylabel('mass balance in mm.w.e')
+        plt.plot(x,y)
+        path = os.path.join(output_path, f'{self.id}.png')
+        plt.savefig(path, format='png')
+        plt.show()
 
         
 class GlacierCollection:
