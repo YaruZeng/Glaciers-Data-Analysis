@@ -1,6 +1,7 @@
 import math
 from datetime import datetime
 
+
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Return the distance in km between two points around the Earth.
 
@@ -11,13 +12,22 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     return d
 
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass 
+    return False
+
+
 def validation_glacier(glacier_id, name, unit, lat, lon, code):
 
     error_count = 0
 
     if type(glacier_id) == str and type(name) == str and type(unit) == str and type(lat) == float and type(lon) == float and type(code) == int:
 
-        if len(glacier_id) == 5:
+        if len(glacier_id) == 5 and is_number(glacier_id):
             pass
         else:
             print('Validation Error: The unique ID should be 5 digits.')
@@ -48,21 +58,22 @@ def validation_glacier(glacier_id, name, unit, lat, lon, code):
     return error_count
 
 
+
 def validation_add_mass_balance_measurement(year, mass_balance, check_partial):
 
     crt_year = datetime.now().year
     error_count = 0
 
-    if type(year) == int and year <= crt_year:
+    if is_number(year) and year <= crt_year:
         pass
     else:
         print(f'Validation Error: The year should be an integer number which is less than or equal to the current year {crt_year}.')
         error_count += 1
     
-    if type(mass_balance) == float:
+    if is_number(mass_balance):
         pass
     else:
-        print('Validation Error: The mass_balance should be a float number.')
+        print('Validation Error: The mass_balance should be a digit.')
         error_count += 1
 
     if type(check_partial) == bool:
@@ -77,9 +88,8 @@ def validation_add_mass_balance_measurement(year, mass_balance, check_partial):
 def validation_collect(row_index, id, unit, lat, lon):
 
     error_count = 0
-    crt_year = datetime.now().year
 
-    if len(id) == 5:
+    if len(id) == 5 and is_number(id):
         pass
     else:
         print(f'Validation Error in row{row_index}: The unique ID should be 5 digits.')
@@ -104,3 +114,35 @@ def validation_collect(row_index, id, unit, lat, lon):
         error_count += 1
 
     return error_count
+
+
+
+def validation_read_mass_balance(row_index, id, year, annual_balance):
+
+    error_count = 0
+    crt_year = datetime.now().year
+
+    if len(id) == 5 and is_number(id):
+        pass
+    else:
+        print(f'Validation Error in row{row_index}: The unique ID should be 5 digits.')
+        error_count += 1
+
+    if int(year) <= crt_year:
+        pass
+    else:
+        print(f'Validation Error in row{row_index}: The year should be an integer number which is less than or equal to the current year {crt_year}.')
+        error_count += 1
+
+    if is_number(annual_balance):
+        pass
+    else:
+        print(f'Validation Error in row{row_index}: The annual balance should be a digit.')
+        error_count += 1
+
+    return error_count
+
+
+
+
+

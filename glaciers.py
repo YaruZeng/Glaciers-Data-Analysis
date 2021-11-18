@@ -68,11 +68,11 @@ class GlacierCollection:
         self.collection_object = {}
         
         with open(self.path, newline = '') as f:
-            file = csv.DictReader(f)
+            collection_info = csv.DictReader(f)
 
             row_index = 0
 
-            for row in file:
+            for row in collection_info:
 
                 row_index += 1
 
@@ -93,44 +93,31 @@ class GlacierCollection:
 
         self.collection_mass_balance = {}
         
-        with open(file_path, 'r', encoding='utf-8') as f:
-            file = csv.reader(f)
-            balance_data = list(file)
-            row_index_del = []
+        with open(file_path, 'r') as f:
+            balance_data = csv.DictReader(f)
 
-            #print(len(balance_data))
+            row_index = 0
 
-            for row_index in range(len(balance_data)):
-                if balance_data[row_index][11] == '':
-                    row_index_del.append(row_index)
-                    #print(row_index, balance_data[row_index])
+            for row in balance_data:
 
-            #print(row_index_del)
-            cnt_del = 0
-            for i in range(len(row_index_del)):
-                del balance_data[row_index_del[i]]
-                if i < len(row_index_del) - 1:
-                    cnt_del += 1
-                    row_index_del[i+1] -= cnt_del
-                    #print(row_index_del)
+                row_index += 1
 
-
-            #print(len(balance_data))
-
-            for row_index in range(len(balance_data)):
-                
-                if row_index != 0:
-                    current_id = balance_data[row_index][2]
-                    year = int(balance_data[row_index][3])
+                crt_id = row['WGMS_ID']   
+                year = row['YEAR']
+                annual_balance = row['ANNUAL_BALANCE']
+                #print(annual_balance, type(annual_balance))
                     
-                    mass_balance = float(balance_data[row_index][11])
+                if row['LOWER_BOUND'] != '9999' and row['UPPER_BOUND'] != '9999':
+                    check_partial = True
+                else:
+                    check_partial = False
                     
-                    if balance_data[row_index][4] != '9999' and balance_data[row_index][5] != '9999':
-                        check_partial = True
-                    else:
-                        check_partial = False
+                error_count = utils.validation_read_mass_balance(row_index, crt_id, year, annual_balance)
 
-                    self.collection_object[current_id].add_mass_balance_measurement(year,mass_balance,check_partial)
+                if error_count == 0:
+                    year = int(row['YEAR']) 
+                    annual_balance = float(row['ANNUAL_BALANCE'])
+                    self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
 
 
     def find_nearest(self, lat, lon, n=5):
@@ -283,7 +270,7 @@ class GlacierCollection:
 file_path_basic = Path('sheet-A.csv')
 a = GlacierCollection(file_path_basic)
 
-#a.read_mass_balance_data('sheet-EE.csv')
+a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
 #a.find_nearest(2, 3, 2)
@@ -296,3 +283,4 @@ a = GlacierCollection(file_path_basic)
 
 #b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
 #b.add_mass_balance_measurement(2027, 444, 1)
+
