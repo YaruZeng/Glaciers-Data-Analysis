@@ -1,6 +1,14 @@
 import math
 from datetime import datetime
 
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        pass 
+    return False
+
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Return the distance in km between two points around the Earth.
@@ -10,15 +18,6 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     R = 6371
     d = 2 * R * math.asin(pow(math.sin((lat2-lat1)/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2-lon1)/2)**2, 1/2))
     return d
-
-
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        pass 
-    return False
 
 
 def validation_glacier(glacier_id, name, unit, lat, lon, code):
@@ -33,7 +32,7 @@ def validation_glacier(glacier_id, name, unit, lat, lon, code):
             print('Validation Error: The unique ID should be 5 digits.')
             error_count += 1
 
-        if -90.0 <= lat <= 90.0:
+        if -90 <= lat <= 90:
             pass 
         else:
             print('Validation Error: The latitute should be between -90 and 90.')
@@ -116,7 +115,6 @@ def validation_collect(row_index, id, unit, lat, lon):
     return error_count
 
 
-
 def validation_read_mass_balance(row_index, id, year, annual_balance):
 
     error_count = 0
@@ -143,6 +141,32 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
     return error_count
 
 
+def validation_find_nearest(lat, lon):
+
+    error_count = 0
+
+    if is_number(lat):
+
+        if -90 <= lat <= 90:
+            pass 
+        else:
+            print('Validation Error: The latitute should be between -90 and 90.')
+            error_count += 1
+    else:
+        print('Validation Error: The latitute should be a digit between -90 and 90.')
+        error_count += 1
 
 
+    if  is_number(lon):
 
+        if -180 <= lon <= 180:
+            pass
+        else:
+            print('Validation Error: The lontitute should be between -180 and 180.')
+            error_count += 1
+    else:
+        print('Validation Error: The lontitute should be a digit between -180 and 180.')
+        error_count += 1
+        
+
+    return error_count

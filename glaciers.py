@@ -3,12 +3,12 @@ import csv
 import utils
 import matplotlib.pyplot as plt
 import os
-from datetime import datetime
 
 
 class Glacier:
     def __init__(self, glacier_id, name, unit, lat, lon, code):
 
+        # check validation
         self.error_count = utils.validation_glacier(glacier_id, name, unit, lat, lon, code)
 
         if self.error_count == 0:
@@ -23,6 +23,7 @@ class Glacier:
 
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
 
+        # check validation
         error_count = utils.validation_add_mass_balance_measurement(year, mass_balance, check_partial)
 
         if self.error_count == 0 and error_count == 0:
@@ -82,7 +83,8 @@ class GlacierCollection:
                 lat = float(row['LATITUDE'])
                 lon = float(row['LONGITUDE'])
                 code = int(row['PRIM_CLASSIFIC'] + row['FORM'] + row['FRONTAL_CHARS'])
-                
+
+                # check validation
                 error_count = utils.validation_collect(row_index, id, unit, lat, lon)
                 
                 if error_count == 0:
@@ -111,7 +113,8 @@ class GlacierCollection:
                     check_partial = True
                 else:
                     check_partial = False
-                    
+                
+                # check validation
                 error_count = utils.validation_read_mass_balance(row_index, crt_id, year, annual_balance)
 
                 if error_count == 0:
@@ -122,30 +125,34 @@ class GlacierCollection:
 
     def find_nearest(self, lat, lon, n=5):
         """Get the n glaciers closest to the given coordinates."""
-        lat1 = lat
-        lon1 = lon
-        distance = {}
-        nearest_names = []
+        error_count = utils.validation_find_nearest(lat, lon)
 
-        for k in self.collection_object:
-            lat2 = self.collection_object[k].lat
-            lon2 = self.collection_object[k].lon
-            d = utils.haversine_distance(lat1, lon1, lat2, lon2)
-            distance[self.collection_object[k].id] = d
+        if error_count == 0:
 
-        #print('distance_ordered is', distance, len(distance))
+            lat1 = lat
+            lon1 = lon
+            distance = {}
+            nearest_names = []
 
-        distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1], reverse=True))
-        #print('distance_ordered is', distance_ordered, len(distance_ordered))
+            for k in self.collection_object:
+                lat2 = self.collection_object[k].lat
+                lon2 = self.collection_object[k].lon
+                d = utils.haversine_distance(lat1, lon1, lat2, lon2)
+                distance[self.collection_object[k].id] = d
 
-        cnt = 0 
-        for key, value in distance_ordered.items():
-            cnt += 1
-            if cnt > n:
-                break
-            nearest_names.append(self.collection_object[key].name)
+            #print('distance_ordered is', distance, len(distance))
 
-        print(nearest_names)
+            distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1], reverse=True))
+            #print('distance_ordered is', distance_ordered, len(distance_ordered))
+
+            cnt = 0 
+            for key, value in distance_ordered.items():
+                cnt += 1
+                if cnt > n:
+                    break
+                nearest_names.append(self.collection_object[key].name)
+
+            print(nearest_names)
     
 
     def filter_by_code(self, code_pattern):
@@ -273,7 +280,7 @@ a = GlacierCollection(file_path_basic)
 a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
-#a.find_nearest(2, 3, 2)
+#a.find_nearest(444, 444, 2)
 #a.sort_by_latest_mass_balance()
 #a.summary()
 
@@ -283,4 +290,11 @@ a.read_mass_balance_data('sheet-EE.csv')
 
 #b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
 #b.add_mass_balance_measurement(2027, 444, 1)
+
+"""
+for k in a.collection_object:
+    
+    print('mass balance of id '+k+' is')
+    print(a.collection_object[k].mass_balance)
+"""
 
