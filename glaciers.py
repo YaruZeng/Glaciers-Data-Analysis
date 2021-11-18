@@ -244,8 +244,21 @@ class GlacierCollection:
         print(f'The earliest measurement was in {earliest_year}.')
         print(f'{shrunk_pcg}% of glaciers shrunk in their last measurement.')
 
+
     def plot_extremes(self, output_path):
-        raise NotImplementedError
+
+        mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
+        #print(mass_balance_latest_ordered)
+        
+        id_shrunk_most = list(mass_balance_latest_ordered.keys())[0]
+        id_grew_most = list(mass_balance_latest_ordered.keys())[-1]
+
+        #print(id_shrunk_most)
+        #print(id_grew_most)
+
+        self.collection_object[id_shrunk_most].plot_mass_balance(output_path)
+        self.collection_object[id_grew_most].plot_mass_balance(output_path)
+
 
 
 file_path_basic = Path('sheet-A.csv')
@@ -258,3 +271,6 @@ a.read_mass_balance_data('sheet-EE.csv')
 #a.sort_by_latest_mass_balance()
 #a.summary()
 
+#output_path = Path('../')
+#a.collection_object['01047'].plot_mass_balance(output_path)
+#a.plot_extremes(output_path)
