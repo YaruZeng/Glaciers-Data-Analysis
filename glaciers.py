@@ -3,30 +3,63 @@ import csv
 import utils
 import matplotlib.pyplot as plt
 import os
+from datetime import datetime
 
 class Glacier:
     def __init__(self, glacier_id, name, unit, lat, lon, code):
-        self.id = glacier_id
-        self.name = name
-        self.unit = unit 
-        self.lat = lat 
-        self.lon = lon 
-        self.code = code
         
-        self.mass_balance = {}
-    def add_mass_balance_measurement(self, year, mass_balance, check_partial):
-        
-        if year in self.mass_balance.keys():
-            
-            if check_partial == 1 and self.mass_balance[year]['check_partial'] == 1:
-                self.mass_balance[year]['mass_balance'] += mass_balance
-                      
-            if check_partial == 0 and self.mass_balance[year]['check_partial'] == 1:
-                pass
-        
+        if type(glacier_id) == str and type(name) == str and type(unit) == str and type(lat) == float and type(lon) == float and type(code) == int:
+
+            if len(glacier_id) == 5:
+                self.id = glacier_id
+            else:
+                print('Validation Error: The unique ID should be 5 digits.')
+
+            if -90.0<=lat<=90.0:
+                self.lat = lat 
+            else:
+                print('Validation Error: The latitute should be between -90 and 90.')
+
+            if  -180<=lon<=180:
+                self.lon = lon
+            else:
+                print('Validation Error: The lontitute should be between -180 and 180.')
+
+            if len(unit) == 2 and (unit.isupper() or unit == '99'):
+                self.unit = unit
+            else:
+                print('Validation Error: Thee political unit should be 2 capital letters or "99".')
+
+            self.name = name
+            self.code = code
+
+            self.mass_balance = {}
+
         else:
-            self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
+            print('Validation Error:  The identifier, name and political unit should be passed as strings, and the latitude and longitude as numerical values. The 3-digit code should be passed as an integer.')
+
+
+    def add_mass_balance_measurement(self, year, mass_balance, check_partial):
+
+        crt_year = datetime.now().year
+
+        if type(year) == int and year <= crt_year:
         
+            if year in self.mass_balance.keys():
+                
+                if check_partial == 1 and self.mass_balance[year]['check_partial'] == 1:
+                    self.mass_balance[year]['mass_balance'] += mass_balance
+                        
+                if check_partial == 0 and self.mass_balance[year]['check_partial'] == 1:
+                    pass
+            
+            else:
+                self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
+
+        else:
+            print(f'Validation Error: The year should be an integer number which is less than or equal to the current year {crt_year}.')
+
+            
     def plot_mass_balance(self, output_path):
         
         #print(self.mass_balance)
@@ -103,7 +136,7 @@ class GlacierCollection:
                 
                 if row_index != 0:
                     current_id = balance_data[row_index][2]
-                    year = balance_data[row_index][3]
+                    year = int(balance_data[row_index][3])
                     
                     mass_balance = float(balance_data[row_index][11])
                     
@@ -261,10 +294,10 @@ class GlacierCollection:
 
 
 
-file_path_basic = Path('sheet-A.csv')
-a = GlacierCollection(file_path_basic)
+#file_path_basic = Path('sheet-A.csv')
+#a = GlacierCollection(file_path_basic)
 
-a.read_mass_balance_data('sheet-EE.csv')
+#a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
 #a.find_nearest(2, 3, 2)
@@ -274,3 +307,6 @@ a.read_mass_balance_data('sheet-EE.csv')
 #output_path = Path('../')
 #a.collection_object['01047'].plot_mass_balance(output_path)
 #a.plot_extremes(output_path)
+
+#b = Glacier('12345', 'boogie', 'FF', 33.3, 44.5, 999)
+#b.add_mass_balance_measurement(2021, 444, 1)
