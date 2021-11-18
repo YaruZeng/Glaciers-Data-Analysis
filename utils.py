@@ -72,3 +72,35 @@ def validation_add_mass_balance_measurement(year, mass_balance, check_partial):
     
     return error_count
 
+
+
+def validation_collect(row_index, id, unit, lat, lon):
+
+    error_count = 0
+    crt_year = datetime.now().year
+
+    if len(id) == 5:
+        pass
+    else:
+        print(f'Validation Error in row{row_index}: The unique ID should be 5 digits.')
+        error_count += 1
+
+    if -90.0 <= lat <= 90.0:
+        pass 
+    else:
+        print(f'Validation Error in row{row_index}: The latitute should be between -90 and 90.')
+        error_count += 1
+
+    if -180 <= lon <= 180:
+        pass
+    else:
+        print(f'Validation Error in row{row_index}: The lontitute should be between -180 and 180.')
+        error_count += 1
+
+    if len(unit) == 2 and (unit.isupper() or unit == '99'):
+        pass
+    else:
+        print(f'Validation Error in row{row_index}: Thee political unit should be 2 capital letters or "99".')
+        error_count += 1
+
+    return error_count

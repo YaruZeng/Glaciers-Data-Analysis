@@ -69,16 +69,24 @@ class GlacierCollection:
         
         with open(self.path, newline = '') as f:
             file = csv.DictReader(f)
-            
+
+            row_index = 0
+
             for row in file:
-                glacier_id = row['WGMS_ID']
+
+                row_index += 1
+
+                id = row['WGMS_ID']
                 name = row['NAME']
                 unit = row['POLITICAL_UNIT']
                 lat = float(row['LATITUDE'])
                 lon = float(row['LONGITUDE'])
                 code = int(row['PRIM_CLASSIFIC'] + row['FORM'] + row['FRONTAL_CHARS'])
                 
-                self.collection_object[glacier_id] = Glacier(glacier_id, name, unit, lat, lon, code)
+                error_count = utils.validation_collect(row_index, id, unit, lat, lon)
+                
+                if error_count == 0:
+                    self.collection_object[id] = Glacier(id, name, unit, lat, lon, code)
 
 
     def read_mass_balance_data(self, file_path):
@@ -187,6 +195,7 @@ class GlacierCollection:
 
         print(names_same_code)    
 
+
     def sort_by_latest_mass_balance(self, n=5, reverse=False):
         """Return the N glaciers with the highest area accumulated in the last measurement."""
         
@@ -271,8 +280,8 @@ class GlacierCollection:
 
 
 
-#file_path_basic = Path('sheet-A.csv')
-#a = GlacierCollection(file_path_basic)
+file_path_basic = Path('sheet-A.csv')
+a = GlacierCollection(file_path_basic)
 
 #a.read_mass_balance_data('sheet-EE.csv')
 
@@ -287,5 +296,3 @@ class GlacierCollection:
 
 #b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
 #b.add_mass_balance_measurement(2027, 444, 1)
-
-
