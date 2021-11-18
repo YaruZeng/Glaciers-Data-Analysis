@@ -1,5 +1,6 @@
 from pathlib import Path
 import csv
+import utils
 
 class Glacier:
     def __init__(self, glacier_id, name, unit, lat, lon, code):
@@ -95,9 +96,32 @@ class GlacierCollection:
                     self.collection_object[current_id].add_mass_balance_measurement(year,mass_balance,check_partial)
 
 
-    def find_nearest(self, lat, lon, n):
+    def find_nearest(self, lat, lon, n=5):
         """Get the n glaciers closest to the given coordinates."""
-        raise NotImplementedError
+        lat1 = lat
+        lon1 = lon
+        distance = {}
+        nearest_names = []
+
+        for k in self.collection_object:
+            lat2 = self.collection_object[k].lat
+            lon2 = self.collection_object[k].lon
+            d = utils.haversine_distance(lat1, lon1, lat2, lon2)
+            distance[self.collection_object[k].id] = d
+
+        #print('distance_ordered is', distance, len(distance))
+
+        distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1], reverse=True))
+        #print('distance_ordered is', distance_ordered, len(distance_ordered))
+
+        cnt = 0 
+        for key, value in distance_ordered.items():
+            cnt += 1
+            if cnt > n:
+                break
+            nearest_names.append(self.collection_object[key].name)
+
+        print(nearest_names)
     
 
     def filter_by_code(self, code_pattern):
@@ -152,3 +176,4 @@ a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
 
+a.find_nearest(2, 3, 2)
