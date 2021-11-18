@@ -5,61 +5,53 @@ import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 
+
 class Glacier:
     def __init__(self, glacier_id, name, unit, lat, lon, code):
-        
-        if type(glacier_id) == str and type(name) == str and type(unit) == str and type(lat) == float and type(lon) == float and type(code) == int:
 
-            if len(glacier_id) == 5:
-                self.id = glacier_id
-            else:
-                print('Validation Error: The unique ID should be 5 digits.')
+        self.error_count = utils.validation_glacier(glacier_id, name, unit, lat, lon, code)
 
-            if -90.0<=lat<=90.0:
-                self.lat = lat 
-            else:
-                print('Validation Error: The latitute should be between -90 and 90.')
-
-            if  -180<=lon<=180:
-                self.lon = lon
-            else:
-                print('Validation Error: The lontitute should be between -180 and 180.')
-
-            if len(unit) == 2 and (unit.isupper() or unit == '99'):
-                self.unit = unit
-            else:
-                print('Validation Error: Thee political unit should be 2 capital letters or "99".')
-
+        if self.error_count == 0:
+            self.id = glacier_id
+            self.lat = lat
+            self.lon = lon
+            self.unit = unit
             self.name = name
             self.code = code
-
             self.mass_balance = {}
-
-        else:
-            print('Validation Error:  The identifier, name and political unit should be passed as strings, and the latitude and longitude as numerical values. The 3-digit code should be passed as an integer.')
-
+        
 
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
 
         crt_year = datetime.now().year
+        error_count = 0
 
-        if type(year) == int and year <= crt_year:
-        
-            if year in self.mass_balance.keys():
-                
-                if check_partial == 1 and self.mass_balance[year]['check_partial'] == 1:
-                    self.mass_balance[year]['mass_balance'] += mass_balance
-                        
-                if check_partial == 0 and self.mass_balance[year]['check_partial'] == 1:
-                    pass
+        if self.error_count == 0:
+
+            if type(year) == int and year <= crt_year:
+
+                if type(mass_balance) == float:
             
+                    if year in self.mass_balance.keys():
+                        
+                        if check_partial == True and self.mass_balance[year]['check_partial'] == True:
+                            self.mass_balance[year]['mass_balance'] += mass_balance
+                                
+                        if check_partial == False and self.mass_balance[year]['check_partial'] == True:
+                            pass
+                    
+                    else:
+                        self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
+
+                else: print('Validation Error: The mass_balance should be a float number.')
+
             else:
-                self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
+                print(f'Validation Error: The year should be an integer number which is less than or equal to the current year {crt_year}.')
 
         else:
-            print(f'Validation Error: The year should be an integer number which is less than or equal to the current year {crt_year}.')
-
+            print('Please check data validation when creating a Glacier class before the next calling of the add_mass_balance_measurement method.')
             
+
     def plot_mass_balance(self, output_path):
         
         #print(self.mass_balance)
@@ -141,9 +133,9 @@ class GlacierCollection:
                     mass_balance = float(balance_data[row_index][11])
                     
                     if balance_data[row_index][4] != '9999' and balance_data[row_index][5] != '9999':
-                        check_partial = 1
+                        check_partial = True
                     else:
-                        check_partial = 0
+                        check_partial = False
 
                     self.collection_object[current_id].add_mass_balance_measurement(year,mass_balance,check_partial)
 
@@ -308,5 +300,7 @@ class GlacierCollection:
 #a.collection_object['01047'].plot_mass_balance(output_path)
 #a.plot_extremes(output_path)
 
-#b = Glacier('12345', 'boogie', 'FF', 33.3, 44.5, 999)
+#b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
 #b.add_mass_balance_measurement(2021, 444, 1)
+
+
