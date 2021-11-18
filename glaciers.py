@@ -158,9 +158,37 @@ class GlacierCollection:
 
         print(names_same_code)    
 
-    def sort_by_latest_mass_balance(self, n, reverse):
+    def sort_by_latest_mass_balance(self, n=5, reverse=False):
         """Return the N glaciers with the highest area accumulated in the last measurement."""
-        raise NotImplementedError
+        
+        self.mass_balance_latest = {}
+        output_names = []
+
+        for k in self.collection_object:
+
+            year_list = sorted(self.collection_object[k].mass_balance.keys(), reverse = True)
+
+            if len(year_list) != 0:
+                year_latest = year_list[0]
+                self.mass_balance_latest[self.collection_object[k].id] = self.collection_object[k].mass_balance[year_latest]['mass_balance']
+
+        #print(mass_balance_latest, len(mass_balance_latest))
+
+        if reverse:
+            mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
+        else:
+            mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1], reverse=True))
+
+        #print(mass_balance_latest_ordered, len(mass_balance_latest_ordered))
+
+        cnt = 0 
+        for key, value in mass_balance_latest_ordered.items():
+            cnt += 1
+            if cnt > n:
+                break
+            output_names.append(self.collection_object[key].name)
+
+        print(output_names)
 
     def summary(self):
         raise NotImplementedError
@@ -175,5 +203,7 @@ a = GlacierCollection(file_path_basic)
 a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
+#a.find_nearest(2, 3, 2)
+#a.sort_by_latest_mass_balance()
 
-a.find_nearest(2, 3, 2)
+
