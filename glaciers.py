@@ -190,8 +190,40 @@ class GlacierCollection:
 
         print(output_names)
 
+    
     def summary(self):
-        raise NotImplementedError
+        num_glacier = len(self.mass_balance_latest)
+        #print(num_glacier)
+
+        glacier_earliest = {}
+
+        #print(self.mass_balance_latest)
+
+        for k in self.collection_object:
+
+            year_list = sorted(self.collection_object[k].mass_balance.keys())
+
+            if len(year_list) != 0:
+                year_earliest = year_list[0]
+                glacier_earliest[self.collection_object[k].id] = year_earliest
+        #print(glacier_earliest)
+
+        earliest_year = sorted(glacier_earliest.values())[0]
+
+        shrunk_count = 0
+        for k in self.mass_balance_latest:
+            if self.mass_balance_latest[k] < 0:
+                shrunk_count += 1
+        
+        #print(shrunk_count)
+        
+        shrunk_pcg = int(round((shrunk_count/num_glacier), 2) * 100)
+
+        #print(shrunk_pcg)
+
+        print(f'The collection has {num_glacier} glaciers.')
+        print(f'The earliest measurement was in {earliest_year}.')
+        print(f'{shrunk_pcg}% of glaciers shrunk in their last measurement.')
 
     def plot_extremes(self, output_path):
         raise NotImplementedError
@@ -205,5 +237,5 @@ a.read_mass_balance_data('sheet-EE.csv')
 #a.filter_by_code(424)
 #a.find_nearest(2, 3, 2)
 #a.sort_by_latest_mass_balance()
-
+#a.summary()
 
