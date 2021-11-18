@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """Return the distance in km between two points around the Earth.
@@ -44,5 +45,30 @@ def validation_glacier(glacier_id, name, unit, lat, lon, code):
         print('Validation Error:  The identifier, name and political unit should be passed as strings, and the latitude and longitude as numerical values. The 3-digit code should be passed as an integer.')
         error_count += 1
 
-
     return error_count
+
+
+def validation_add_mass_balance_measurement(year, mass_balance, check_partial):
+
+    crt_year = datetime.now().year
+    error_count = 0
+
+    if type(year) == int and year <= crt_year:
+        pass
+    else:
+        print(f'Validation Error: The year should be an integer number which is less than or equal to the current year {crt_year}.')
+        error_count += 1
+    
+    if type(mass_balance) == float:
+        pass
+    else:
+        print('Validation Error: The mass_balance should be a float number.')
+        error_count += 1
+
+    if type(check_partial) == bool:
+        pass
+    else:
+        print('Validation Error: The check_partial should be a bool value.')
+    
+    return error_count
+

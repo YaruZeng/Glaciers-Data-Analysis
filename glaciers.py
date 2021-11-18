@@ -23,34 +23,19 @@ class Glacier:
 
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
 
-        crt_year = datetime.now().year
-        error_count = 0
+        error_count = utils.validation_add_mass_balance_measurement(year, mass_balance, check_partial)
 
-        if self.error_count == 0:
-
-            if type(year) == int and year <= crt_year:
-
-                if type(mass_balance) == float:
+        if self.error_count == 0 and error_count == 0:
             
-                    if year in self.mass_balance.keys():
-                        
-                        if check_partial == True and self.mass_balance[year]['check_partial'] == True:
-                            self.mass_balance[year]['mass_balance'] += mass_balance
-                                
-                        if check_partial == False and self.mass_balance[year]['check_partial'] == True:
-                            pass
-                    
-                    else:
-                        self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
+            if year in self.mass_balance.keys(): 
 
-                else: print('Validation Error: The mass_balance should be a float number.')
-
+                if check_partial == True and self.mass_balance[year]['check_partial'] == True:
+                    self.mass_balance[year]['mass_balance'] += mass_balance         
+                if check_partial == False and self.mass_balance[year]['check_partial'] == True:
+                    pass
             else:
-                print(f'Validation Error: The year should be an integer number which is less than or equal to the current year {crt_year}.')
+                self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
 
-        else:
-            print('Please check data validation when creating a Glacier class before the next calling of the add_mass_balance_measurement method.')
-            
 
     def plot_mass_balance(self, output_path):
         
@@ -301,6 +286,6 @@ class GlacierCollection:
 #a.plot_extremes(output_path)
 
 #b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
-#b.add_mass_balance_measurement(2021, 444, 1)
+#b.add_mass_balance_measurement(2027, 444, 1)
 
 
