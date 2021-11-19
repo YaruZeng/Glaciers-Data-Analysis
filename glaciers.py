@@ -125,6 +125,7 @@ class GlacierCollection:
 
     def find_nearest(self, lat, lon, n=5):
         """Get the n glaciers closest to the given coordinates."""
+        # check validation
         error_count = utils.validation_find_nearest(lat, lon)
 
         if error_count == 0:
@@ -157,37 +158,41 @@ class GlacierCollection:
 
     def filter_by_code(self, code_pattern):
         """Return the names of glaciers whose codes match the given pattern."""
-        names_same_code = []
-        if type(code_pattern) == int:
-            for k in self.collection_object:
-                if code_pattern == self.collection_object[k].code:
-                    names_same_code.append(self.collection_object[k].name)
-        else:
-            for k in self.collection_object:    
-                if code_pattern[:1] == '?':
-                    if code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
-                        names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == '?':
-                        names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[1:2] == '?' and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
-                        names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[1:2] == '?' and code_pattern[2:3] == '?':
-                        names_same_code.append(self.collection_object[k].name)
+        # check validation
+        error_count = utils.validation_filter_by_code(code_pattern)
 
-                elif code_pattern[:1] != '?' and code_pattern[1:2] == '?':
-                    if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+        if error_count == 0:
+            names_same_code = []
+            if type(code_pattern) == int:
+                for k in self.collection_object:
+                    if code_pattern == self.collection_object[k].code:
                         names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == '?':
-                        names_same_code.append(self.collection_object[k].name)
+            else:
+                for k in self.collection_object:    
+                    if code_pattern[:1] == '?':
+                        if code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == '?':
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[1:2] == '?' and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[1:2] == '?' and code_pattern[2:3] == '?':
+                            names_same_code.append(self.collection_object[k].name)
 
-                elif code_pattern[:1] != '?' and code_pattern[1:2] != '?' and code_pattern[2:3] == '?':
-                    if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[1:2] == str(self.collection_object[k].code)[1:2]:
-                        names_same_code.append(self.collection_object[k].name)
-                else:
-                    if code_pattern == str(self.collection_object[k].code):
-                        names_same_code.append(self.collection_object[k].name)
+                    elif code_pattern[:1] != '?' and code_pattern[1:2] == '?':
+                        if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == '?':
+                            names_same_code.append(self.collection_object[k].name)
 
-        print(names_same_code)    
+                    elif code_pattern[:1] != '?' and code_pattern[1:2] != '?' and code_pattern[2:3] == '?':
+                        if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[1:2] == str(self.collection_object[k].code)[1:2]:
+                            names_same_code.append(self.collection_object[k].name)
+                    else:
+                        if code_pattern == str(self.collection_object[k].code):
+                            names_same_code.append(self.collection_object[k].name)
+
+            print(names_same_code, len(names_same_code)) 
 
 
     def sort_by_latest_mass_balance(self, n=5, reverse=False):
@@ -279,7 +284,7 @@ a = GlacierCollection(file_path_basic)
 
 a.read_mass_balance_data('sheet-EE.csv')
 
-#a.filter_by_code(424)
+a.filter_by_code(424)
 #a.find_nearest(444, 444, 2)
 #a.sort_by_latest_mass_balance()
 #a.summary()

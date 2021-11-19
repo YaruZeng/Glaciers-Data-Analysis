@@ -170,3 +170,32 @@ def validation_find_nearest(lat, lon):
         
 
     return error_count
+
+
+def validation_filter_by_code(code_pattern):
+
+    error_count = 0
+
+    if type(code_pattern) == int and len(str(code_pattern)) == 3:
+        pass
+
+    elif type(code_pattern) == str and len(code_pattern) == 3:
+        cnt = 0
+        for i in range(len(code_pattern)):
+            if is_number(code_pattern[i]) or code_pattern[i] == '?':
+                pass
+            else:
+                cnt += 1
+
+        if cnt == 0:
+            pass
+        else:
+            print('Validation Error: Every element of the code pattern should be a digit or a "?".')
+            error_count += 1
+
+    else:
+        print('Validation Error: The code pattern should be an integer or string with a length of 3. Every element of the code pattern should be a digit or a "?".')
+        error_count += 1
+
+    return error_count
+
