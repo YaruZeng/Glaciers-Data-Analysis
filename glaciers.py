@@ -4,29 +4,41 @@ import utils
 import matplotlib.pyplot as plt
 import os
 
+
 class Glacier:
     def __init__(self, glacier_id, name, unit, lat, lon, code):
-        self.id = glacier_id
-        self.name = name
-        self.unit = unit 
-        self.lat = lat 
-        self.lon = lon 
-        self.code = code
+
+        # check validation
+        self.error_count = utils.validation_glacier(glacier_id, name, unit, lat, lon, code)
+
+        if self.error_count == 0:
+            self.id = glacier_id
+            self.lat = lat
+            self.lon = lon
+            self.unit = unit
+            self.name = name
+            self.code = code
+
+            self.mass_balance = {}
         
-        self.mass_balance = {}
+
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
-        
-        if year in self.mass_balance.keys():
+
+        # check validation
+        error_count = utils.validation_add_mass_balance_measurement(year, mass_balance, check_partial)
+
+        if self.error_count == 0 and error_count == 0:
             
-            if check_partial == 1 and self.mass_balance[year]['check_partial'] == 1:
-                self.mass_balance[year]['mass_balance'] += mass_balance
-                      
-            if check_partial == 0 and self.mass_balance[year]['check_partial'] == 1:
-                pass
-        
-        else:
-            self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
-        
+            if year in self.mass_balance.keys(): 
+
+                if check_partial == True and self.mass_balance[year]['check_partial'] == True:
+                    self.mass_balance[year]['mass_balance'] += mass_balance         
+                if check_partial == False and self.mass_balance[year]['check_partial'] == True:
+                    pass
+            else:
+                self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
+
+
     def plot_mass_balance(self, output_path):
         
         #print(self.mass_balance)
@@ -58,156 +70,170 @@ class GlacierCollection:
         self.collection_object = {}
         
         with open(self.path, newline = '') as f:
-            file = csv.DictReader(f)
-            
-            for row in file:
-                glacier_id = row['WGMS_ID']
+            collection_info = csv.DictReader(f)
+
+            row_index = 0
+
+            for row in collection_info:
+
+                row_index += 1
+
+                id = row['WGMS_ID']
                 name = row['NAME']
                 unit = row['POLITICAL_UNIT']
                 lat = float(row['LATITUDE'])
                 lon = float(row['LONGITUDE'])
                 code = int(row['PRIM_CLASSIFIC'] + row['FORM'] + row['FRONTAL_CHARS'])
+
+                # check validation
+                error_count = utils.validation_collect(row_index, id, unit, lat, lon)
                 
-                self.collection_object[glacier_id] = Glacier(glacier_id, name, unit, lat, lon, code)
+                if error_count == 0:
+                    self.collection_object[id] = Glacier(id, name, unit, lat, lon, code)
 
 
     def read_mass_balance_data(self, file_path):
 
-        self.collection_mass_balance = {}
         
-        with open(file_path, 'r', encoding='utf-8') as f:
-            file = csv.reader(f)
-            balance_data = list(file)
-            row_index_del = []
+        with open(file_path, 'r') as f:
+            balance_data = csv.DictReader(f)
 
-            #print(len(balance_data))
+            row_index = 0
 
-            for row_index in range(len(balance_data)):
-                if balance_data[row_index][11] == '':
-                    row_index_del.append(row_index)
-                    #print(row_index, balance_data[row_index])
+            for row in balance_data:
 
-            #print(row_index_del)
-            cnt_del = 0
-            for i in range(len(row_index_del)):
-                del balance_data[row_index_del[i]]
-                if i < len(row_index_del) - 1:
-                    cnt_del += 1
-                    row_index_del[i+1] -= cnt_del
-                    #print(row_index_del)
+                row_index += 1
 
-
-            #print(len(balance_data))
-
-            for row_index in range(len(balance_data)):
+                crt_id = row['WGMS_ID']   
+                year = row['YEAR']
+                annual_balance = row['ANNUAL_BALANCE']
+                #print(annual_balance, type(annual_balance))
+                    
+                if row['LOWER_BOUND'] != '9999' and row['UPPER_BOUND'] != '9999':
+                    check_partial = True
+                else:
+                    check_partial = False
                 
-                if row_index != 0:
-                    current_id = balance_data[row_index][2]
-                    year = balance_data[row_index][3]
-                    
-                    mass_balance = float(balance_data[row_index][11])
-                    
-                    if balance_data[row_index][4] != '9999' and balance_data[row_index][5] != '9999':
-                        check_partial = 1
-                    else:
-                        check_partial = 0
+                # check validation
 
-                    self.collection_object[current_id].add_mass_balance_measurement(year,mass_balance,check_partial)
+                error_count = utils.validation_read_mass_balance(row_index, crt_id, year, annual_balance)
+
+                if error_count == 0:
+                    if crt_id in self.collection_object.keys():
+                        year = int(row['YEAR']) 
+                        annual_balance = float(row['ANNUAL_BALANCE'])
+                        self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
+                    else:
+                        print(f'Validation Error in row {row_index}: Failed to read mass balance data. {crt_id} is not defined when creating the collection.')
 
 
     def find_nearest(self, lat, lon, n=5):
         """Get the n glaciers closest to the given coordinates."""
-        lat1 = lat
-        lon1 = lon
-        distance = {}
-        nearest_names = []
+        # check validation
+        error_count = utils.validation_find_nearest(lat, lon)
 
-        for k in self.collection_object:
-            lat2 = self.collection_object[k].lat
-            lon2 = self.collection_object[k].lon
-            d = utils.haversine_distance(lat1, lon1, lat2, lon2)
-            distance[self.collection_object[k].id] = d
+        if error_count == 0:
 
-        #print('distance_ordered is', distance, len(distance))
+            lat1 = lat
+            lon1 = lon
+            distance = {}
+            nearest_names = []
 
-        distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1], reverse=True))
-        #print('distance_ordered is', distance_ordered, len(distance_ordered))
+            for k in self.collection_object:
+                lat2 = self.collection_object[k].lat
+                lon2 = self.collection_object[k].lon
+                d = utils.haversine_distance(lat1, lon1, lat2, lon2)
+                distance[self.collection_object[k].id] = d
 
-        cnt = 0 
-        for key, value in distance_ordered.items():
-            cnt += 1
-            if cnt > n:
-                break
-            nearest_names.append(self.collection_object[key].name)
+            #print('distance_ordered is', distance, len(distance))
 
-        print(nearest_names)
+            distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1], reverse=True))
+            #print('distance_ordered is', distance_ordered, len(distance_ordered))
+
+            cnt = 0 
+            for key in distance_ordered.items():
+                cnt += 1
+                if cnt > n:
+                    break
+                nearest_names.append(self.collection_object[key].name)
+
+            print(nearest_names)
     
 
     def filter_by_code(self, code_pattern):
         """Return the names of glaciers whose codes match the given pattern."""
-        names_same_code = []
-        if type(code_pattern) == int:
-            for k in self.collection_object:
-                if code_pattern == self.collection_object[k].code:
-                    names_same_code.append(self.collection_object[k].name)
-        else:
-            for k in self.collection_object:    
-                if code_pattern[:1] == '?':
-                    if code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
-                        names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == '?':
-                        names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[1:2] == '?' and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
-                        names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[1:2] == '?' and code_pattern[2:3] == '?':
-                        names_same_code.append(self.collection_object[k].name)
+        # check validation
+        error_count = utils.validation_filter_by_code(code_pattern)
 
-                elif code_pattern[:1] != '?' and code_pattern[1:2] == '?':
-                    if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+        if error_count == 0:
+            names_same_code = []
+            if type(code_pattern) == int:
+                for k in self.collection_object:
+                    if code_pattern == self.collection_object[k].code:
                         names_same_code.append(self.collection_object[k].name)
-                    elif code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == '?':
-                        names_same_code.append(self.collection_object[k].name)
+            else:
+                for k in self.collection_object:    
+                    if code_pattern[:1] == '?':
+                        if code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[1:2] == str(self.collection_object[k].code)[1:2] and code_pattern[2:3] == '?':
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[1:2] == '?' and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[1:2] == '?' and code_pattern[2:3] == '?':
+                            names_same_code.append(self.collection_object[k].name)
 
-                elif code_pattern[:1] != '?' and code_pattern[1:2] != '?' and code_pattern[2:3] == '?':
-                    if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[1:2] == str(self.collection_object[k].code)[1:2]:
-                        names_same_code.append(self.collection_object[k].name)
-                else:
-                    if code_pattern == str(self.collection_object[k].code):
-                        names_same_code.append(self.collection_object[k].name)
+                    elif code_pattern[:1] != '?' and code_pattern[1:2] == '?':
+                        if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == str(self.collection_object[k].code)[2:3]:
+                            names_same_code.append(self.collection_object[k].name)
+                        elif code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[2:3] == '?':
+                            names_same_code.append(self.collection_object[k].name)
 
-        print(names_same_code)    
+                    elif code_pattern[:1] != '?' and code_pattern[1:2] != '?' and code_pattern[2:3] == '?':
+                        if code_pattern[:1] == str(self.collection_object[k].code)[:1] and code_pattern[1:2] == str(self.collection_object[k].code)[1:2]:
+                            names_same_code.append(self.collection_object[k].name)
+                    else:
+                        if code_pattern == str(self.collection_object[k].code):
+                            names_same_code.append(self.collection_object[k].name)
+
+            print(names_same_code, len(names_same_code)) 
+
 
     def sort_by_latest_mass_balance(self, n=5, reverse=False):
         """Return the N glaciers with the highest area accumulated in the last measurement."""
-        
-        self.mass_balance_latest = {}
-        output_names = []
+        # check validation
+        error_count = utils.validation_sort_by_latest_mass_balance(n, reverse)
 
-        for k in self.collection_object:
+        if error_count == 0:
 
-            year_list = sorted(self.collection_object[k].mass_balance.keys(), reverse = True)
+            self.mass_balance_latest = {}
+            output_names = []
 
-            if len(year_list) != 0:
-                year_latest = year_list[0]
-                self.mass_balance_latest[self.collection_object[k].id] = self.collection_object[k].mass_balance[year_latest]['mass_balance']
+            for k in self.collection_object:
 
-        #print(mass_balance_latest, len(mass_balance_latest))
+                year_list = sorted(self.collection_object[k].mass_balance.keys(), reverse = True)
 
-        if reverse:
-            mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
-        else:
-            mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1], reverse=True))
+                if len(year_list) != 0:
+                    year_latest = year_list[0]
+                    self.mass_balance_latest[self.collection_object[k].id] = self.collection_object[k].mass_balance[year_latest]['mass_balance']
 
-        #print(mass_balance_latest_ordered, len(mass_balance_latest_ordered))
+            #print(mass_balance_latest, len(mass_balance_latest))
 
-        cnt = 0 
-        for key, value in mass_balance_latest_ordered.items():
-            cnt += 1
-            if cnt > n:
-                break
-            output_names.append(self.collection_object[key].name)
+            if reverse:
+                mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
+            else:
+                mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1], reverse=True))
 
-        print(output_names)
+            #print(mass_balance_latest_ordered, len(mass_balance_latest_ordered))
+
+            cnt = 0 
+            for key, value in mass_balance_latest_ordered.items():
+                cnt += 1
+                if cnt > n:
+                    break
+                output_names.append(self.collection_object[key].name)
+
+            print(output_names)
 
     
     def summary(self):
@@ -260,17 +286,27 @@ class GlacierCollection:
         self.collection_object[id_grew_most].plot_mass_balance(output_path)
 
 
-
 file_path_basic = Path('sheet-A.csv')
 a = GlacierCollection(file_path_basic)
 
 a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
-#a.find_nearest(2, 3, 2)
-#a.sort_by_latest_mass_balance()
+#a.find_nearest(444, 444, 2)
+#a.sort_by_latest_mass_balance(8, 999)
 #a.summary()
 
 #output_path = Path('../')
 #a.collection_object['01047'].plot_mass_balance(output_path)
 #a.plot_extremes(output_path)
+
+#b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
+#b.add_mass_balance_measurement(2027, 444, 1)
+
+
+for k in a.collection_object:
+    
+    print('mass balance of id '+k+' is')
+    print(a.collection_object[k].mass_balance)
+
+
