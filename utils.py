@@ -75,22 +75,22 @@ def validation_collect(row_index, id, unit, lat, lon):
     if is_number(id) and len(id) == 5:
         pass
     else:
-        raise ValueError(f'Row {row_index}: The glacier id should be 5 digits.')
+        raise ValueError(f'At row {row_index}, the glacier id should be 5 digits.')
 
     if -90.0 <= lat <= 90.0:
         pass 
     else:
-        raise ValueError(f'Row {row_index}: The latitute should be between -90 and 90.')
+        raise ValueError(f'At row {row_index}, the latitute should be between -90 and 90.')
 
     if -180 <= lon <= 180:
         pass
     else:
-        raise ValueError(f'Row {row_index}: The lontitute should be between -180 and 180.')
+        raise ValueError(f'At row {row_index}, the lontitute should be between -180 and 180.')
         
     if len(unit) == 2 and (unit.isupper() or unit == '99'):
         pass
     else:
-        raise ValueError(f'Row {row_index}: Thee political unit should be 2 capital letters or "99".')
+        raise ValueError(f'At row {row_index}, the political unit should be 2 capital letters or "99".')
         
 
 
@@ -101,19 +101,19 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
     if len(id) == 5 and is_number(id):
         pass
     else:
-        raise ValueError(f'Row {row_index}: The unique ID should be 5 digits.')
+        raise ValueError(f'At row {row_index}, the unique ID should be 5 digits.')
         
 
     if int(year) <= crt_year:
         pass
     else:
-        raise ValueError(f'Row {row_index}: The year should be an integer number which is less than or equal to the current year {crt_year}.')
+        raise ValueError(f'At row {row_index}, the year should be an integer number which is less than or equal to the current year {crt_year}.')
         
 
     if is_number(annual_balance):
         pass
     else:
-        raise ValueError(f'Row {row_index}: The annual balance should be a digit.')
+        raise ValueError(f'At row {row_index}, the annual balance should be a digit.')
         
 
 
@@ -151,8 +151,6 @@ def validation_filter_by_code(code_pattern):
             
     else:
         raise ValueError('The code pattern should be an integer or string with a length of 3. Every element of the code pattern should be a digit or a "?".')
-        
-
 
 
 def validation_sort_by_latest_mass_balance(n, reverse):
