@@ -113,7 +113,7 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
     if is_number(annual_balance):
         pass
     else:
-        raise ValueError(f'At row {row_index}, the annual balance should be a digit.')
+        raise ValueError('The annual balance should be a digit.')
         
 
 
