@@ -6,21 +6,20 @@ import os
 
 
 class Glacier:
-
     def __init__(self, glacier_id, name, unit, lat, lon, code):
 
         # check validation
-        utils.validation_glacier(glacier_id, name, unit, lat, lon, code)
+        self.error_count = utils.validation_glacier(glacier_id, name, unit, lat, lon, code)
 
-        #if self.error_count == 0:
-        self.id = glacier_id
-        self.lat = lat
-        self.lon = lon
-        self.unit = unit
-        self.name = name
-        self.code = code
+        if self.error_count == 0:
+            self.id = glacier_id
+            self.lat = lat
+            self.lon = lon
+            self.unit = unit
+            self.name = name
+            self.code = code
 
-        self.mass_balance = {}
+            self.mass_balance = {}
         
 
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
@@ -61,8 +60,7 @@ class Glacier:
         plt.savefig(path, format='png')
         plt.show()
 
-
-
+        
 class GlacierCollection:
 
     def __init__(self, file_path):
@@ -126,7 +124,7 @@ class GlacierCollection:
                         annual_balance = float(row['ANNUAL_BALANCE'])
                         self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
                     else:
-                        raise ValueError(f'Row {row_index}: Failed to read mass balance data. {crt_id} is not defined when creating the collection.')
+                        print(f'Validation Error in row {row_index}: Failed to read mass balance data. {crt_id} is not defined when creating the collection.')
 
 
     def find_nearest(self, lat, lon, n=5):
@@ -288,30 +286,27 @@ class GlacierCollection:
         self.collection_object[id_grew_most].plot_mass_balance(output_path)
 
 
-#file_path_basic = Path('sheet-A.csv')
-#a = GlacierCollection(file_path_basic)
+file_path_basic = Path('sheet-A.csv')
+a = GlacierCollection(file_path_basic)
 
-#a.read_mass_balance_data('sheet-EE.csv')
+a.read_mass_balance_data('sheet-EE.csv')
 
 #a.filter_by_code(424)
 #a.find_nearest(444, 444, 2)
-#a.sort_by_latest_mass_balance(8,True)
+#a.sort_by_latest_mass_balance(8, 999)
 #a.summary()
 
 #output_path = Path('../')
 #a.collection_object['01047'].plot_mass_balance(output_path)
 #a.plot_extremes(output_path)
 
-b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
-b.add_mass_balance_measurement(2021, 444, 1)
-print(b.mass_balance)
+#b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
+#b.add_mass_balance_measurement(2027, 444, 1)
 
-"""
+
 for k in a.collection_object:
     
     print('mass balance of id '+k+' is')
     print(a.collection_object[k].mass_balance)
-
-"""
 
 
