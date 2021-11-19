@@ -199,3 +199,20 @@ def validation_filter_by_code(code_pattern):
 
     return error_count
 
+
+def validation_sort_by_latest_mass_balance(n, reverse):
+
+    error_count = 0
+
+    if type(n) == int:
+        if type(reverse) == bool:
+            pass
+        else:
+            print('Validation Error: The reverse should be a bool value.')
+            error_count += 1
+    else:
+        print('Validation Error: The n should be an integer number.')
+        error_count += 1
+    
+    return error_count
+    

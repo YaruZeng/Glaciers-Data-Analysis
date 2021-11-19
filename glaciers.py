@@ -197,35 +197,39 @@ class GlacierCollection:
 
     def sort_by_latest_mass_balance(self, n=5, reverse=False):
         """Return the N glaciers with the highest area accumulated in the last measurement."""
-        
-        self.mass_balance_latest = {}
-        output_names = []
+        # check validation
+        error_count = utils.validation_sort_by_latest_mass_balance(n, reverse)
 
-        for k in self.collection_object:
+        if error_count == 0:
 
-            year_list = sorted(self.collection_object[k].mass_balance.keys(), reverse = True)
+            self.mass_balance_latest = {}
+            output_names = []
 
-            if len(year_list) != 0:
-                year_latest = year_list[0]
-                self.mass_balance_latest[self.collection_object[k].id] = self.collection_object[k].mass_balance[year_latest]['mass_balance']
+            for k in self.collection_object:
 
-        #print(mass_balance_latest, len(mass_balance_latest))
+                year_list = sorted(self.collection_object[k].mass_balance.keys(), reverse = True)
 
-        if reverse:
-            mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
-        else:
-            mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1], reverse=True))
+                if len(year_list) != 0:
+                    year_latest = year_list[0]
+                    self.mass_balance_latest[self.collection_object[k].id] = self.collection_object[k].mass_balance[year_latest]['mass_balance']
 
-        #print(mass_balance_latest_ordered, len(mass_balance_latest_ordered))
+            #print(mass_balance_latest, len(mass_balance_latest))
 
-        cnt = 0 
-        for key, value in mass_balance_latest_ordered.items():
-            cnt += 1
-            if cnt > n:
-                break
-            output_names.append(self.collection_object[key].name)
+            if reverse:
+                mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
+            else:
+                mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1], reverse=True))
 
-        print(output_names)
+            #print(mass_balance_latest_ordered, len(mass_balance_latest_ordered))
+
+            cnt = 0 
+            for key, value in mass_balance_latest_ordered.items():
+                cnt += 1
+                if cnt > n:
+                    break
+                output_names.append(self.collection_object[key].name)
+
+            print(output_names)
 
     
     def summary(self):
@@ -278,15 +282,14 @@ class GlacierCollection:
         self.collection_object[id_grew_most].plot_mass_balance(output_path)
 
 
-
 file_path_basic = Path('sheet-A.csv')
 a = GlacierCollection(file_path_basic)
 
 a.read_mass_balance_data('sheet-EE.csv')
 
-a.filter_by_code(424)
+#a.filter_by_code(424)
 #a.find_nearest(444, 444, 2)
-#a.sort_by_latest_mass_balance()
+#a.sort_by_latest_mass_balance(8, 999)
 #a.summary()
 
 #output_path = Path('../')
