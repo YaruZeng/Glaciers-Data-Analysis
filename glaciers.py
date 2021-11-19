@@ -18,6 +18,7 @@ class Glacier:
             self.unit = unit
             self.name = name
             self.code = code
+
             self.mass_balance = {}
         
 
@@ -93,7 +94,6 @@ class GlacierCollection:
 
     def read_mass_balance_data(self, file_path):
 
-        self.collection_mass_balance = {}
         
         with open(file_path, 'r') as f:
             balance_data = csv.DictReader(f)
@@ -115,12 +115,16 @@ class GlacierCollection:
                     check_partial = False
                 
                 # check validation
+
                 error_count = utils.validation_read_mass_balance(row_index, crt_id, year, annual_balance)
 
                 if error_count == 0:
-                    year = int(row['YEAR']) 
-                    annual_balance = float(row['ANNUAL_BALANCE'])
-                    self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
+                    if crt_id in self.collection_object.keys():
+                        year = int(row['YEAR']) 
+                        annual_balance = float(row['ANNUAL_BALANCE'])
+                        self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
+                    else:
+                        print(f'Validation Error in row {row_index}: Failed to read mass balance data. {crt_id} is not defined when creating the collection.')
 
 
     def find_nearest(self, lat, lon, n=5):
@@ -147,7 +151,7 @@ class GlacierCollection:
             #print('distance_ordered is', distance_ordered, len(distance_ordered))
 
             cnt = 0 
-            for key, value in distance_ordered.items():
+            for key in distance_ordered.items():
                 cnt += 1
                 if cnt > n:
                     break
@@ -299,10 +303,10 @@ a.read_mass_balance_data('sheet-EE.csv')
 #b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
 #b.add_mass_balance_measurement(2027, 444, 1)
 
-"""
+
 for k in a.collection_object:
     
     print('mass balance of id '+k+' is')
     print(a.collection_object[k].mass_balance)
-"""
+
 
