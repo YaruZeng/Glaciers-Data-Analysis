@@ -15,6 +15,11 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 
     Latitude and longitude for each point are given in degrees.
     """
+    lat1 = math.radians(lat1)
+    lat2 = math.radians(lat2)
+    lon1 = math.radians(lon1)
+    lon2 = math.radians(lon2)
+
     R = 6371
     d = 2 * R * math.asin(pow(math.sin((lat2-lat1)/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2-lon1)/2)**2, 1/2))
     return d
@@ -113,7 +118,7 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
     if is_number(annual_balance):
         pass
     else:
-        raise ValueError(f'At row {row_index}, the annual balance should be a digit.')
+        raise ValueError('The annual balance should be a digit.')
         
 
 
