@@ -3,24 +3,6 @@ from pathlib import Path
 import glaciers
 
 
-year_mass_balance = [
-    {
-        'year':2015,
-        'value':-793.0
-    },
-    {
-        'year':2020,
-        'value':-13331.0
-    }
-]
-
-data_code_name = [
-    {'code':323,
-    'name':['EIRIKSJOKULL', 'HOFSJOKUL_EYSTRI', 'HRUTFELL', 'ORAEFAJOKULL', 'SNAEFELLSJOKULL', 'THRANDARJOKULL', 'TINDFJALLAJOKULL', 'TORFAJOKULL', 'TUNGNAFELLSJOKULL']},
-    {'code':'5?4',
-    'name': ['ALERCE', 'DE LOS TRES', 'NARVAEZ GRANDE', 'PIEDRAS BLANCAS', 'SAN LORENZO SUR', 'ARTESONRAJU', 'SHALLAP']}
-]
-
 
 @pytest.fixture()
 def define_collection():
@@ -30,17 +12,6 @@ def define_collection():
     return collection
 
 
-@pytest.fixture(params = year_mass_balance)
-def year_mass_balance(request):
-    return request.param
-# test validation
-
-
-@pytest.fixture(params = data_code_name)
-def data_code_names(request):
-    return request.param
-
-
 def test_mass_balance_error(define_collection):
     collection = define_collection
     with pytest.raises(ValueError):
@@ -48,25 +19,51 @@ def test_mass_balance_error(define_collection):
     assert True
 
 
-def test_mass_balance_success(define_collection, year_mass_balance):
+@pytest.mark.parametrize('year,expected',
+    [
+        (2015, -793.0), # data for the partial measurement
+        (2020, -13331.0) # data for the whole measurement
+    ]
+)
+def test_mass_balance_success(define_collection, year, expected):
    collection = define_collection
    collection.read_mass_balance_data('sheet-EE_valid.csv')
-   year = year_mass_balance['year']
-   expected = year_mass_balance['value']
    actual = collection.collection_object['04532'].mass_balance[year]['mass_balance']
-   #partial = collection.collection_object['04532'].mass_balance[2020]['mass_balance']
-   
    assert actual == expected
    
 
-def test_sort_by_latest_mass_balance(define_collection):
+@pytest.mark.parametrize('code_pattern, expected',
+    [
+        (238,['CAINHAVARRE']),
+        ('?46',['BONETE S', 'MARTIAL ESTE', 'MUZTAG ATA (GLACIER NO. 15)']),
+        ('6?3',['ECHAURREN NORTE', 'SNAEFELL']),
+        ('54?',['DE LOS TRES', 'GLJUFURARJOKULL']),
+        ('??5',['PENON', 'CIPRESES', 'FLATISVATNET', 'MEMORGEBREEN', 'NORDFJORDBREEN', 'NORTHERN PART']),
+        ('?5?',['BIRCH', 'BODMER', 'SCALETTA']),
+        ('1??',['TORRE'])
+    ]
+)
+def test_filter_by_code(define_collection,code_pattern,expected):
     collection = define_collection
-    names_latest = collection.sort_by_latest_mass_balance(5,True)
-    print(names_latest)
+    #collection.read_mass_balance_data('sheet-EE_valid.csv')
+    actual = collection.filter_by_code(code_pattern)
+    assert actual == expected
 
-    assert names_latest == ['ARTESONRAJU', 'TUNSBERGDALSBREEN', 'PARLUNG NO. 94', 'GRAAFJELLSBREA', 'AGUA NEGRA']
 
+@pytest.mark.parametrize('n, reverse, expected',
+    [
+        (5, True, ['ARTESONRAJU', 'TUNSBERGDALSBREEN', 'PARLUNG NO. 94', 'GRAAFJELLSBREA', 'AGUA NEGRA']),
+        (5, False, ['STORSTEINSFJELLBREEN', 'CAINHAVARRE', 'BLAAISEN', 'REMBESDALSKAAKA', 'CHHOTA SHIGRI']),
+        (2, True, ['ARTESONRAJU', 'TUNSBERGDALSBREEN']),
+        (3, False, ['STORSTEINSFJELLBREEN', 'CAINHAVARRE', 'BLAAISEN'])
+    ]
+)
+def test_sort_by_latest_mass_balance(define_collection,n,reverse,expected):
+    collection = define_collection
+    file_path = Path('sheet-EE_valid.csv')
+    collection.read_mass_balance_data(file_path)
+    actual = collection.sort_by_latest_mass_balance(n,reverse)
+    assert actual == expected
 
-    
 
 
