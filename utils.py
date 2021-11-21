@@ -15,6 +15,11 @@ def haversine_distance(lat1, lon1, lat2, lon2):
 
     Latitude and longitude for each point are given in degrees.
     """
+    lat1 = math.radians(float(lat1)) 
+    lat2 = math.radians(float(lat2))
+    lon1 = math.radians(float(lon1))
+    lon2 = math.radians(float(lon2))
+
     R = 6371
     d = 2 * R * math.asin(pow(math.sin((lat2-lat1)/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2-lon1)/2)**2, 1/2))
     return d

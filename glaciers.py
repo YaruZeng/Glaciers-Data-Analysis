@@ -143,11 +143,11 @@ class GlacierCollection:
 
         #print('distance_ordered is', distance, len(distance))
 
-        distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1], reverse=True))
-        #print('distance_ordered is', distance_ordered, len(distance_ordered))
+        distance_ordered = dict(sorted(distance.items(), key=lambda e: e[1]))
+        print('distance_ordered is', distance_ordered, len(distance_ordered))
 
         cnt = 0 
-        for key in distance_ordered.items():
+        for key in distance_ordered:
             cnt += 1
             if cnt > n:
                 break
@@ -282,12 +282,14 @@ class GlacierCollection:
 file_path_basic = Path('sheet-A.csv')
 a = GlacierCollection(file_path_basic)
 
-a.read_mass_balance_data('sheet-EE.csv')
-
+a.read_mass_balance_data('sheet-EE_valid.csv')
+#print(a.collection_object['04532'].mass_balance[2015]['mass_balance'])
 #a.filter_by_code(424)
-#a.find_nearest(444, 444, 2)
-a.sort_by_latest_mass_balance(8,True)
-a.summary()
+a.find_nearest(-29.9,-69.8,2)
+#a.sort_by_latest_mass_balance(5, True)
+
+
+#a.summary()
 
 #output_path = Path('../')
 #a.collection_object['01047'].plot_mass_balance(output_path)
@@ -298,10 +300,10 @@ a.summary()
 #print(b.mass_balance)
 
 
-'''for k in a.collection_object:
+for k in a.collection_object:
     
     print('mass balance of id '+k+' is')
     print(a.collection_object[k].mass_balance)
 
 
-'''
+
