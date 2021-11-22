@@ -24,6 +24,7 @@ class Glacier:
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
 
         # check validation
+
         utils.validation_add_mass_balance_measurement(year, mass_balance, check_partial)
             
         if year in self.mass_balance.keys(): 
@@ -97,27 +98,27 @@ class GlacierCollection:
 
                 row_index += 1
 
-                crt_id = row['WGMS_ID']   
+                crt_id = row['WGMS_ID']
                 year = row['YEAR']
                 annual_balance = row['ANNUAL_BALANCE']
-                    
+
                 if row['LOWER_BOUND'] != '9999' and row['UPPER_BOUND'] != '9999':
                     check_partial = True
                 else:
                     check_partial = False
-                
+                    
                 # check validation
 
                 utils.validation_read_mass_balance(row_index, crt_id, year, annual_balance)
-                
+                    
                 # check glacier id is defined when creating the collection
-
-                if crt_id in self.collection_object.keys():
-                    year = int(row['YEAR']) 
-                    annual_balance = float(row['ANNUAL_BALANCE'])
-                    self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
-                else:
-                    raise ValueError(f'Row {row_index}: Failed to read mass balance data. {crt_id} is not defined when creating the collection.')
+                if annual_balance != '':
+                    if crt_id in self.collection_object.keys():
+                        year = int(row['YEAR']) 
+                        annual_balance = float(row['ANNUAL_BALANCE'])
+                        self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
+                    else:
+                        raise ValueError(f'Row {row_index}: Failed to read mass balance data. {crt_id} is not defined when creating the collection.')
 
 
     def find_nearest(self, lat, lon, n=5):

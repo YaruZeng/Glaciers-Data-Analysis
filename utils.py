@@ -1,6 +1,7 @@
 import math
 from datetime import datetime
 
+
 def is_number(s):
     try:
         float(s)
@@ -113,12 +114,13 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
         pass
     else:
         raise ValueError(f'Invalid year at row {row_index}! The year should be an integer number which is less than or equal to the current year {crt_year}.')
-        
 
-    if is_number(annual_balance):
+    if annual_balance == '':
+        pass
+    elif is_number(annual_balance):
         pass
     else:
-        raise ValueError('Invalid annual balance! The annual balance should be a digit.')
+        raise ValueError(f'{row_index}: Invalid annual balance! The annual balance should be a digit.')
         
 
 

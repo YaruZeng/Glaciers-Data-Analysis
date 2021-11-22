@@ -42,13 +42,6 @@ def test_glacier_add_mass_error(err, year, mass_balance, check_partial):
     assert True
 
 
-def test_collection_mass_balance_error(define_collection):
-    collection = define_collection
-    with pytest.raises(ValueError):
-        collection.read_mass_balance_data('sheet-EE_test_mass_balance_error.csv')
-    assert True
-
-
 @pytest.mark.parametrize('err, lat, lon, n',
     [
         (ValueError,'ee','33',2),
@@ -75,7 +68,7 @@ def test_find_nearest_error(define_collection, err, lat, lon, n):
 )
 def test_mass_balance_success(define_collection, id, year, expected):
    collection = define_collection
-   collection.read_mass_balance_data('sheet-EE_valid.csv')
+   collection.read_mass_balance_data('sheet-EE.csv')
    actual = collection.collection_object[id].mass_balance[year]['mass_balance']
    assert actual == expected
    
@@ -107,7 +100,7 @@ def test_filter_by_code(define_collection,code_pattern,expected):
 )
 def test_sort_by_latest_mass_balance(define_collection,n,reverse,expected):
     collection = define_collection
-    file_path = Path('sheet-EE_valid.csv')
+    file_path = Path('sheet-EE.csv')
     collection.read_mass_balance_data(file_path)
     actual = collection.sort_by_latest_mass_balance(n,reverse)
     assert actual == expected
