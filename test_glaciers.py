@@ -3,7 +3,6 @@ from pathlib import Path
 import glaciers
 
 
-
 @pytest.fixture()
 def define_collection():
     file_path = Path('sheet-A.csv')
@@ -12,10 +11,55 @@ def define_collection():
     return collection
 
 
-def test_mass_balance_error(define_collection):
+@pytest.mark.parametrize('err, glacier_id, name, unit, lat, lon, code',
+    [
+        (TypeError,2345,'glacier0','99',56,-89,333),
+        (TypeError,'12345','glacier1','99',56,[1,2],333),
+        (TypeError,'12345','glacier2','99',56,88,'333'),
+        (ValueError,'2345','glacier3','SS',56,-89,333),
+        (ValueError,'12345','glacier4','ns',56,-89,333),
+        (ValueError,'12345','glacier5','99',-888,-89,333),
+        (ValueError,'12345','glacier6','99',56,999,333)
+    ]
+)
+def test_glacier_creating_error(err, glacier_id, name, unit, lat, lon, code):
+    with pytest.raises(err):
+        glaciers.Glacier(glacier_id, name, unit, lat, lon, code)
+    assert True
+
+
+@pytest.mark.parametrize('err, year, mass_balance, check_partial',
+    [
+        (ValueError,'2033','333',True),
+        (ValueError,'glac',345,True),
+        (ValueError,'2021','eee',False),
+        (TypeError,'2021',111,'glacier')
+    ]
+)
+def test_glacier_add_mass_error(err, year, mass_balance, check_partial):
+    with pytest.raises(err):
+        glaciers.Glacier('12345','glacier0','99',56,-89,333).add_mass_balance_measurement(year, mass_balance, check_partial)
+    assert True
+
+
+def test_collection_mass_balance_error(define_collection):
     collection = define_collection
     with pytest.raises(ValueError):
         collection.read_mass_balance_data('sheet-EE_test_mass_balance_error.csv')
+    assert True
+
+
+@pytest.mark.parametrize('err, lat, lon, n',
+    [
+        (ValueError,'ee','33',2),
+        (ValueError,66,345,3),
+        (ValueError,'43','-66',6.9)
+    ]
+)
+def test_find_nearest_error(err, lat, lon, n):
+    collection = define_collection
+    with pytest.raises(err):
+        collection.find_nearest(lat, lon, n)
     assert True
 
 
@@ -45,7 +89,6 @@ def test_mass_balance_success(define_collection, year, expected):
 )
 def test_filter_by_code(define_collection,code_pattern,expected):
     collection = define_collection
-    #collection.read_mass_balance_data('sheet-EE_valid.csv')
     actual = collection.filter_by_code(code_pattern)
     assert actual == expected
 
