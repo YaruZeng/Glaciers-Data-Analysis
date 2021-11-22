@@ -221,6 +221,18 @@ class GlacierCollection:
 
     
     def summary(self):
+
+        self.mass_balance_latest = {}
+
+        for k in self.collection_object:
+
+            year_list = sorted(self.collection_object[k].mass_balance.keys(), reverse = True)
+
+            if len(year_list) != 0:
+                year_latest = year_list[0]
+                self.mass_balance_latest[self.collection_object[k].id] = self.collection_object[k].mass_balance[year_latest]['mass_balance']
+
+
         num_glacier = len(self.mass_balance_latest)
 
         glacier_earliest = {}
