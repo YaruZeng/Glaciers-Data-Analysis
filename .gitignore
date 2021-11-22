@@ -1,2 +1,6 @@
 /__pycache__/
 *.png
+.DS_Store
+.ipynb_checkpoints
+.pytest_cache
+
