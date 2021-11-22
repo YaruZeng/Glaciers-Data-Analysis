@@ -256,32 +256,3 @@ class GlacierCollection:
         self.collection_object[id_shrunk_most].plot_mass_balance(output_path)
         self.collection_object[id_grew_most].plot_mass_balance(output_path)
 
-
-#file_path_basic = Path('sheet-A.csv')
-#a = GlacierCollection(file_path_basic)
-
-#a.read_mass_balance_data('sheet-EE_valid.csv')
-#print(a.collection_object['04532'].mass_balance[2015]['mass_balance'])
-#a.filter_by_code(638)
-#a.find_nearest(-29.9,-69.8,2)
-#a.sort_by_latest_mass_balance(3, False)
-
-
-#a.summary()
-
-#output_path = Path('glacier.png')
-#a.collection_object['01047'].plot_mass_balance(output_path)
-#a.plot_extremes(output_path)
-
-#b = Glacier('1234', 'boogie', 'FF', 33.3, 44.5, 999)
-#b.add_mass_balance_measurement(2021, 444, 1)
-#print(b.mass_balance)
-
-
-#for k in a.collection_object:
-    
-#    print('mass balance of id '+k+' is')
-#    print(a.collection_object[k].mass_balance)
-
-
-

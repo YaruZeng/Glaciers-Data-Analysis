@@ -118,7 +118,7 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
     if is_number(annual_balance):
         pass
     else:
-        raise ValueError('Invalid annual balance! TThe annual balance should be a digit.')
+        raise ValueError('Invalid annual balance! The annual balance should be a digit.')
         
 
 
