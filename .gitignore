@@ -2,3 +2,4 @@
 .test_glaciers.cpython-39-pytest-6.2.5.pyc
 .utils.cpython-39.pyc
 /__pycache__/
+*.png
