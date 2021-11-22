@@ -3,4 +3,5 @@
 .DS_Store
 .ipynb_checkpoints
 .pytest_cache
-
+.sheet-A.csv
+.sheet-EE.csv

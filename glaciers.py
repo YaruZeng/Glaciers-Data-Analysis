@@ -24,14 +24,13 @@ class Glacier:
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
 
         # check validation
-
         utils.validation_add_mass_balance_measurement(year, mass_balance, check_partial)
             
         if year in self.mass_balance.keys(): 
 
-            if check_partial == True and self.mass_balance[year]['check_partial'] == True:
+            if check_partial == True:
                 self.mass_balance[year]['mass_balance'] += mass_balance         
-            if check_partial == False and self.mass_balance[year]['check_partial'] == True:
+            if check_partial == False:
                 pass
         else:
             self.mass_balance[year] = {'mass_balance' : mass_balance, 'check_partial' : check_partial}
@@ -102,18 +101,18 @@ class GlacierCollection:
                 year = row['YEAR']
                 annual_balance = row['ANNUAL_BALANCE']
 
-                if row['LOWER_BOUND'] != '9999' and row['UPPER_BOUND'] != '9999':
-                    check_partial = True
-                else:
+                if row['LOWER_BOUND'] == '9999' and row['UPPER_BOUND'] == '9999':
                     check_partial = False
+                else:
+                    check_partial = True
                     
                 # check validation
-
                 utils.validation_read_mass_balance(row_index, crt_id, year, annual_balance)
                     
-                # check glacier id is defined when creating the collection
-                if annual_balance != '':
+                
+                if annual_balance != '': # leave the row with a none annual balance
                     if crt_id in self.collection_object.keys():
+                        # check glacier id is defined when creating the collection
                         year = int(row['YEAR']) 
                         annual_balance = float(row['ANNUAL_BALANCE'])
                         self.collection_object[crt_id].add_mass_balance_measurement(year,annual_balance,check_partial)
@@ -133,6 +132,8 @@ class GlacierCollection:
         self.nearest_names = []
 
         for k in self.collection_object:
+            # compute the distance
+
             lat2 = self.collection_object[k].lat
             lon2 = self.collection_object[k].lon
             d = utils.haversine_distance(lat1, lon1, lat2, lon2)
@@ -156,6 +157,8 @@ class GlacierCollection:
         utils.validation_filter_by_code(code_pattern)
 
         self.names_same_pattern = []
+
+        # check every possible code pattern and get corresponding names with the code pattern
 
         if type(code_pattern) == int:
             for k in self.collection_object:
@@ -193,6 +196,7 @@ class GlacierCollection:
         """Return the N glaciers with the highest area accumulated in the last measurement."""
         
         # check validation
+        utils.validation_sort_by_latest_mass_balance(n, reverse)
 
         self.mass_balance_latest = {}
         output_names = []

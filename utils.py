@@ -2,6 +2,8 @@ import math
 from datetime import datetime
 
 
+# define a function to determine whether s is a digit
+
 def is_number(s):
     try:
         float(s)
@@ -25,6 +27,8 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     d = 2 * R * math.asin(pow(math.sin((lat2-lat1)/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin((lon2-lon1)/2)**2, 1/2))
     return d
 
+
+# define functions to check the validation of arguments of methods respectively
 
 def validation_glacier(glacier_id, name, unit, lat, lon, code):
 

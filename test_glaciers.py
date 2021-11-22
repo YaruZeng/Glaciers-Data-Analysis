@@ -3,6 +3,8 @@ from pathlib import Path
 import glaciers
 
 
+# setting the glacier collection
+
 @pytest.fixture()
 def define_collection():
     file_path = Path('sheet-A.csv')
@@ -10,6 +12,8 @@ def define_collection():
     
     return collection
 
+
+# test validation error messages when creating a glacier
 
 @pytest.mark.parametrize('err, glacier_id, name, unit, lat, lon, code',
     [
@@ -28,6 +32,8 @@ def test_glacier_creating_error(err, glacier_id, name, unit, lat, lon, code):
     assert True
 
 
+# test validation error messages when calling the add_mass_balance_measurement method
+
 @pytest.mark.parametrize('err, year, mass_balance, check_partial',
     [
         (ValueError,'2033','333',True),
@@ -41,6 +47,8 @@ def test_glacier_add_mass_error(err, year, mass_balance, check_partial):
         glaciers.Glacier('12345','glacier0','99',56,-89,333).add_mass_balance_measurement(year, mass_balance, check_partial)
     assert True
 
+
+# test validation error messages when calling the find_nearest method
 
 @pytest.mark.parametrize('err, lat, lon, n',
     [
@@ -56,14 +64,16 @@ def test_find_nearest_error(define_collection, err, lat, lon, n):
     assert True
 
 
+# test the computaion of mass balance for partial and whole measurements
+
 @pytest.mark.parametrize('id, year,expected',
     [
-        ('04532', 2015, -793.0), # data for the partial measurement
-        ('04532', 2020, -13331.0), # data for the whole measurement
-        ('01048', 1982, -300.0),# data for the whole measurement
-        ('01316', 1966, -25510.0),# data for the partial measurement
-        ('10407', 2014, -720.0),# data for the whole measurement
-        ('03903', 2015, -18969.0)# data for the whole measurement
+        ('04532', 2015, -793.0), # data sample for the partial measurement
+        ('04532', 2020, -13331.0), # data sample for the whole measurement
+        ('01048', 1982, -300.0),# data sample for the whole measurement
+        ('01316', 1966, -25510.0),# data sample for the partial measurement
+        ('10407', 2014, -720.0),# data sample for the whole measurement
+        ('03903', 2015, -18969.0)# data sample for the whole measurement
     ]
 )
 def test_mass_balance_success(define_collection, id, year, expected):
@@ -72,6 +82,8 @@ def test_mass_balance_success(define_collection, id, year, expected):
    actual = collection.collection_object[id].mass_balance[year]['mass_balance']
    assert actual == expected
    
+
+# test filter_by_code method for all patterns of the code
 
 @pytest.mark.parametrize('code_pattern, expected',
     [
@@ -89,6 +101,8 @@ def test_filter_by_code(define_collection,code_pattern,expected):
     actual = collection.filter_by_code(code_pattern)
     assert actual == expected
 
+
+# test sort_by_latest_mass_balance method with reverse True and False
 
 @pytest.mark.parametrize('n, reverse, expected',
     [
