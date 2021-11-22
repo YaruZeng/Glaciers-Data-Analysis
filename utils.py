@@ -34,12 +34,12 @@ def validation_glacier(glacier_id, name, unit, lat, lon, code):
         else:
             raise ValueError('Invalid glacier id! The glacier id should be 5 digits.')
 
-        if -90 <= lat <= 90:
+        if -90 <= int(lat) <= 90:
             pass 
         else:
             raise ValueError('Invalid latitute! The latitute should be between -90 and 90.')
 
-        if -180 <= lon <= 180:
+        if -180 <= int(lon) <= 180:
             pass
         else:
             raise ValueError('Invalid lontitute! The lontitute should be between -180 and 180.')
@@ -82,12 +82,12 @@ def validation_collect(row_index, id, unit, lat, lon):
     else:
         raise ValueError(f'Invalid glacier id at row {row_index}! The glacier id should be 5 digits.')
 
-    if -90.0 <= lat <= 90.0:
+    if -90.0 <= int(lat) <= 90.0:
         pass 
     else:
         raise ValueError(f'Invalid latitute at row {row_index}! The latitute should be between -90 and 90.')
 
-    if -180 <= lon <= 180:
+    if -180 <= int(lon) <= 180:
         pass
     else:
         raise ValueError(f'Invalid lontitute at row {row_index}! The lontitute should be between -180 and 180.')
@@ -124,12 +124,12 @@ def validation_read_mass_balance(row_index, id, year, annual_balance):
 
 def validation_find_nearest(lat, lon, n):
 
-    if is_number(lat) and -90 <= lat <= 90:
+    if is_number(lat) and -90 <= int(lat) <= 90:
         pass 
     else:
         raise ValueError('Invalid latitute! The latitute should be a digit between -90 and 90.')
         
-    if  is_number(lon) and -180 <= lon <= 180:
+    if  is_number(lon) and -180 <= int(lon) <= 180:
         pass
     else:
         raise ValueError('Invalid lontitute! The lontitute should be a digit between -180 and 180.')

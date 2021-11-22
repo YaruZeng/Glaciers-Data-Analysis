@@ -56,23 +56,27 @@ def test_collection_mass_balance_error(define_collection):
         (ValueError,'43','-66',6.9)
     ]
 )
-def test_find_nearest_error(err, lat, lon, n):
+def test_find_nearest_error(define_collection, err, lat, lon, n):
     collection = define_collection
     with pytest.raises(err):
         collection.find_nearest(lat, lon, n)
     assert True
 
 
-@pytest.mark.parametrize('year,expected',
+@pytest.mark.parametrize('id, year,expected',
     [
-        (2015, -793.0), # data for the partial measurement
-        (2020, -13331.0) # data for the whole measurement
+        ('04532', 2015, -793.0), # data for the partial measurement
+        ('04532', 2020, -13331.0), # data for the whole measurement
+        ('01048', 1982, -300.0),# data for the whole measurement
+        ('01316', 1966, -25510.0),# data for the partial measurement
+        ('10407', 2014, -720.0),# data for the whole measurement
+        ('03903', 2015, -18969.0)# data for the whole measurement
     ]
 )
-def test_mass_balance_success(define_collection, year, expected):
+def test_mass_balance_success(define_collection, id, year, expected):
    collection = define_collection
    collection.read_mass_balance_data('sheet-EE_valid.csv')
-   actual = collection.collection_object['04532'].mass_balance[year]['mass_balance']
+   actual = collection.collection_object[id].mass_balance[year]['mass_balance']
    assert actual == expected
    
 
