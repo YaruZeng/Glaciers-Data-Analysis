@@ -199,7 +199,7 @@ class GlacierCollection:
         utils.validation_sort_by_latest_mass_balance(n, reverse)
 
         self.mass_balance_latest = {}
-        output_names = []
+        output = []
 
         for k in self.collection_object:
 
@@ -219,9 +219,9 @@ class GlacierCollection:
             cnt += 1
             if cnt > n:
                 break
-            output_names.append(self.collection_object[key].name)
+            output.append(self.collection_object[key])
 
-        return output_names
+        return output
 
     
     def summary(self):

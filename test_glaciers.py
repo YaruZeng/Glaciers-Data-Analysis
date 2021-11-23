@@ -106,10 +106,10 @@ def test_filter_by_code(define_collection,code_pattern,expected):
 
 @pytest.mark.parametrize('n, reverse, expected',
     [
-        (5, True, ['ARTESONRAJU', 'TUNSBERGDALSBREEN', 'PARLUNG NO. 94', 'GRAAFJELLSBREA', 'AGUA NEGRA']),
-        (5, False, ['STORSTEINSFJELLBREEN', 'CAINHAVARRE', 'BLAAISEN', 'REMBESDALSKAAKA', 'CHHOTA SHIGRI']),
-        (2, True, ['ARTESONRAJU', 'TUNSBERGDALSBREEN']),
-        (3, False, ['STORSTEINSFJELLBREEN', 'CAINHAVARRE', 'BLAAISEN'])
+        (5, True, ['03292', '01316', '03987', '01320', '04532']),
+        (5, False, ['01329', '01330', '01328', '02296', '02921']),
+        (2, True, ['03292', '01316']),
+        (3, False, ['01329', '01330', '01328'])
     ]
 )
 def test_sort_by_latest_mass_balance(define_collection,n,reverse,expected):
@@ -117,7 +117,13 @@ def test_sort_by_latest_mass_balance(define_collection,n,reverse,expected):
     file_path = Path('sheet-EE.csv')
     collection.read_mass_balance_data(file_path)
     actual = collection.sort_by_latest_mass_balance(n,reverse)
-    assert actual == expected
+    id_actual = []
+    for i in range(len(actual)):
+        for key in collection.collection_object:
+            if actual[i] == collection.collection_object[key]:
+                id_actual.append(collection.collection_object[key].id)
+    print(id_actual)
+    assert id_actual == expected
 
 
 
