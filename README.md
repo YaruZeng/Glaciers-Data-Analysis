@@ -46,7 +46,7 @@ Two classes were built to enable users to
 
 #### 6) plot the mass-balance measurements of two glaciers against years which grew most and shrunk most at the latest measurement, 
 
-#### 7) plot get a summary of the data analysis. 
+#### 7) get a summary of the data analysis. 
 
 Users can interact with the 'GlaciersCollection' class to call the functions to conduct data analysis.
 
