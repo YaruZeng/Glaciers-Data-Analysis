@@ -5,15 +5,25 @@ The objective of the project is to write a program which enables users to read i
 ### 1. sheet-A.csv (1696 rows)
 
 It has the basic information for each glacier with one row per glacier. The columns are, in order:
+
 • political unit
+
 • name
+
 • identifier (WGMS_ID), made up of 5 digits
+
 • general location (not of interest for this assignment) • specific location (not of interest for this assignment) 
+
 • latitude, in degrees
+
 • longitude, in degrees
+
 • primary classification, encoded as a digit
+
 • form, encoded as a digit
+
 • frontal characteristics, encoded as a digit
+
 
 The remaining columns are not of interest for this project.
 
@@ -25,11 +35,17 @@ It contains the mass-balance measurements taken across the years. It has one row
 ### 1. glaciers.py
 Two classes were built to enable users to 
 1) read in data,
+
 2) find the nearest glaciers to a given coordinates,
+
 3) get glaciers whose codes match the given pattern,
+
 4) get the glaciers with the highest area accumulated in the last measurement,
+
 5) plot the mass-balance measurements of a specified glacier against years,
+
 6) plot the mass-balance measurements of two glaciers against years which grew most and shrunk most at the latest measurement, 
+
 7) plot get a summary of the data analysis. 
 
 Users can interact with the 'GlaciersCollection' class to call the functions of data analysis.
