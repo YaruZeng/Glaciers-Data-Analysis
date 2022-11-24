@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 class Glacier:
 
     def __init__(self, glacier_id, name, unit, lat, lon, code):
+        """Create a glacier."""
 
         # check validation
         utils.validation_glacier(glacier_id, name, unit, lat, lon, code)
@@ -22,6 +23,7 @@ class Glacier:
 
 
     def add_mass_balance_measurement(self, year, mass_balance, check_partial):
+        """Add a mass balance measurement of a glacier."""
 
         # check validation
         utils.validation_add_mass_balance_measurement(year, mass_balance, check_partial)
@@ -37,6 +39,7 @@ class Glacier:
 
 
     def plot_mass_balance(self, output_path):
+        """Plot mass balance measurements against years."""
         
         x = sorted(self.mass_balance.keys())
         
@@ -87,6 +90,7 @@ class GlacierCollection:
 
 
     def read_mass_balance_data(self, file_path):
+        """Read in the dataset."""
         
         with open(file_path, 'r') as f:
             balance_data = csv.DictReader(f)
@@ -225,6 +229,7 @@ class GlacierCollection:
 
     
     def summary(self):
+        """Return a summary of the data analysis."""
 
         self.mass_balance_latest = {}
 
@@ -264,6 +269,7 @@ class GlacierCollection:
 
 
     def plot_extremes(self, output_path):
+        """Plot the mass-balance measurements of two glaciers against years which grew most and shrunk most at the latest measurement."""
 
         mass_balance_latest_ordered = dict(sorted(self.mass_balance_latest.items(), key=lambda e: e[1]))
         
