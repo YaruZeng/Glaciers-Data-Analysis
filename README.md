@@ -34,19 +34,19 @@ It contains the mass-balance measurements taken across the years. It has one row
 
 ### 1. glaciers.py
 Two classes were built to enable users to 
-1) read in data,
+#### 1) read in data,
 
-2) find the nearest glaciers to a given coordinates,
+#### 2) find the nearest glaciers to a given coordinates,
 
-3) get glaciers whose codes match the given pattern,
+#### 3) get glaciers whose codes match the given pattern,
 
-4) get the glaciers with the highest area accumulated in the last measurement,
+#### 4) get the glaciers with the highest area accumulated in the last measurement,
 
-5) plot the mass-balance measurements of a specified glacier against years,
+#### 5) plot the mass-balance measurements of a specified glacier against years,
 
-6) plot the mass-balance measurements of two glaciers against years which grew most and shrunk most at the latest measurement, 
+#### 6) plot the mass-balance measurements of two glaciers against years which grew most and shrunk most at the latest measurement, 
 
-7) plot get a summary of the data analysis. 
+#### 7) plot get a summary of the data analysis. 
 
 Users can interact with the 'GlaciersCollection' class to call the functions of data analysis.
 
