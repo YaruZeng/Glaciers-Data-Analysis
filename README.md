@@ -1,5 +1,5 @@
 # Glaciers Data Analysis 
-The objective of the project is to write a program which enables users to read in and conduct data analysis of a real dataset of glaciers. The project is finished in UCL course 'MPHY0021 Research Software Engineering with Python' where only the Python standard library, matplotlib and pytest can be used. 
+The objective of the project is to write a program which enables users to read in data and conduct data analysis of a real dataset of glaciers. The project is finished in UCL course 'MPHY0021 Research Software Engineering with Python' where only the Python standard library, matplotlib and pytest can be used. 
 
 ## Data sources
 ### 1. sheet-A.csv (1696 rows)
