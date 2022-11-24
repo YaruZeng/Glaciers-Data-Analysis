@@ -48,7 +48,8 @@ Two classes were built to enable users to
 
 #### 7) plot get a summary of the data analysis. 
 
-Users can interact with the 'GlaciersCollection' class to call the functions of data analysis.
+Users can interact with the 'GlaciersCollection' class to call the functions to conduct data analysis.
+
 
 ### 2. utils.py
 As with many real-world scientific datasets, the measurements can be inconsistent and contain errors. The file aims to raise errors with appropriate error messages when encountering data that appears to be wrong. 
