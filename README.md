@@ -52,8 +52,8 @@ Users can interact with the 'GlaciersCollection' class to call the functions to 
 
 
 ### 2. utils.py
-As with many real-world scientific datasets, the measurements can be inconsistent and contain errors. The file aims to raise errors with appropriate error messages when encountering data that appears to be wrong. 
+As with many real-world scientific datasets, the measurements can be inconsistent and contain errors. The file is constructed to raise errors with appropriate error messages when encountering data that appears to be wrong. 
 
 ### 3. test_glaciers.py
-Tests were written in Pytest to verify the functions behave as expected.
+Tests were written in Pytest to verify the functions behave as expected in the file.
 
